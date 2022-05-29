@@ -6,10 +6,10 @@ def format_dict(d, indent=1):
 
 	s += "\t" * (indent-1) + "{\n"
 	for k, v in zip(d.keys(), d.values()):
+		s += "\t"*indent
 		if type(v) == dict:
-			s += format_dict(v, indent+1)
+			s += f"{k} : {format_dict(v, indent+1)}\n"
 		else:
-			s += "\t"*indent
 			s += f"{k} : {v}\n"
 
 	s += "\t" * (indent-1) + "}\n"

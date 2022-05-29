@@ -45,6 +45,13 @@ def trycast(v, cast):
 	except ValueError:
 		return False
 
+def typed_list(x, t):
+	return all([type(i) == t for i in x])
+
+
+def typed_dict(d, t, u):
+	return typed_list(d.keys(), t) and typed_list(d.values(), u)
+
 
 def normalize(x):
 	return -1 if x < 0 else 1 if x > 0 else 0
