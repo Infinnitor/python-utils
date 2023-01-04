@@ -1,42 +1,62 @@
+class Enum():
+	def __init__(self, *args):
+		assert all([" " not in a for a in args]), f"Space character in enum property {a}"
+
+		for i, a in enumerate(args):
+			self.__dict__[a] = i
+			if self.__dict__.get(a) is None:
+				assert False, f"Repeated use of enum property name {a}"
+
+	def __repr__(self):
+		s = "Enum("
+		for k, v in self.__dict__.items():
+			s += f"{k}={v}, "
+		s = s[:-2]
+		s += ")"
+
+		return s
+
+
+
 class Namespace():
 	def __init__(self, **kwargs):
 		self.__dict__ = kwargs
 
-    def __iter__(self):
-        return zip(self.__dict__.keys(), self.__dict__.values())
+	def __iter__(self):
+		return zip(self.__dict__.keys(), self.__dict__.values())
 
 	def __repr__(self):
 		return repr(self.__dict__)
 
 
 class NamespaceRecursive():
-    def __init__(self, **kwargs):
-        self.__dict__ = kwargs
+	def __init__(self, **kwargs):
+		self.__dict__ = kwargs
 
-        # Iterate over values from JSON file and convert them to NamespaceRecursive if they are dictionaries
-        for k, v in self:
-            if type(v) == dict:
-                self.__dict__[k] = NamespaceRecursive(**v)
-            if type(v) == list:
-                if v and all([type(i) == dict for i in v]):
-                    self.__dict__[k] = [NamespaceRecursive(**i) for i in v]
+		# Iterate over values from JSON file and convert them to NamespaceRecursive if they are dictionaries
+		for k, v in self:
+			if type(v) == dict:
+				self.__dict__[k] = NamespaceRecursive(**v)
+			if type(v) == list:
+				if v and all([type(i) == dict for i in v]):
+					self.__dict__[k] = [NamespaceRecursive(**i) for i in v]
 
-    # Convert NamespaceRecursive to dictionary
-    def to_dictionary(self):
-        new_dict = self.__dict__
-        for k, v in self:
-            if type(v) == NamespaceRecursive:
-                new_dict[k] = v.to_dictionary()
-            if type(v) == list:
-                if v and all([type(i) == NamespaceRecursive for i in v]):
-                    new_dict[k] = [i.to_dictionary() for i in v]
-        return new_dict
+	# Convert NamespaceRecursive to dictionary
+	def to_dictionary(self):
+		new_dict = self.__dict__
+		for k, v in self:
+			if type(v) == NamespaceRecursive:
+				new_dict[k] = v.to_dictionary()
+			if type(v) == list:
+				if v and all([type(i) == NamespaceRecursive for i in v]):
+					new_dict[k] = [i.to_dictionary() for i in v]
+		return new_dict
 
-    def __iter__(self):
-        return self.__dict__.items()
+	def __iter__(self):
+		return self.__dict__.items()
 
-    def __repr__(self):
-        return self.to_dictionary().__repr__()
+	def __repr__(self):
+		return self.to_dictionary().__repr__()
 
 
 def trycast(v, cast):
